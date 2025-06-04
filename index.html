@@ -1,0 +1,707 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OTO MUAMMER - Profesyonel Oto Servis & Bakım</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+</head>
+<body class="bg-gray-200 text-gray-800">
+    <!-- Toast notification -->
+    <div id="toast" class="toast">
+        <div class="flex items-center">
+            <i class="fas fa-check-circle mr-2"></i>
+            <span id="toast-message">İşlem başarılı!</span>
+        </div>
+    </div>
+
+    <!-- Appointment Modal -->
+    <div id="appointmentModal" class="modal">
+        <div class="modal-content">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-xl font-bold text-white">Randevu Talep Formu</h3>
+                <button id="closeModal" class="text-white hover:text-red-500">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <form id="appointmentForm" class="space-y-4">
+                <div>
+                    <label class="block text-gray-300 mb-1">Ad Soyad</label>
+                    <input type="text" required class="w-full p-2 bg-gray-700 text-white rounded focus:outline-none focus:ring-2 focus:ring-red-500">
+                </div>
+                <div>
+                    <label class="block text-gray-300 mb-1">Telefon</label>
+                    <input type="tel" required class="w-full p-2 bg-gray-700 text-white rounded focus:outline-none focus:ring-2 focus:ring-red-500">
+                </div>
+                <div>
+                    <label class="block text-gray-300 mb-1">Araç Markası</label>
+                    <input type="text" required class="w-full p-2 bg-gray-700 text-white rounded focus:outline-none focus:ring-2 focus:ring-red-500">
+                </div>
+                <div>
+                    <label class="block text-gray-300 mb-1">Servis Türü</label>
+                    <select class="w-full p-2 bg-gray-700 text-white rounded focus:outline-none focus:ring-2 focus:ring-red-500">
+                        <option value="bakım">Periyodik Bakım</option>
+                        <option value="tamir">Arıza Tamiri</option>
+                        <option value="lastik">Lastik Değişimi</option>
+                        <option value="check">Genel Kontrol</option>
+                        <option value="other">Diğer</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-gray-300 mb-1">Tercih Edilen Tarih ve Saat</label>
+                    <input type="datetime-local" required class="w-full p-2 bg-gray-700 text-white rounded focus:outline-none focus:ring-2 focus:ring-red-500">
+                </div>
+                <div>
+                    <label class="block text-gray-300 mb-1">Notlar</label>
+                    <textarea class="w-full p-2 bg-gray-700 text-white rounded focus:outline-none focus:ring-2 focus:ring-red-500" rows="3"></textarea>
+                </div>
+                <button type="submit" class="w-full py-2 bg-red-600 text-white rounded hover:bg-red-700 transition-all">
+                    Randevu Oluştur
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Live Chat Button -->
+    <div class="fixed bottom-6 right-6 z-50">
+        <button id="chatButton" class="bg-red-600 w-14 h-14 rounded-full flex items-center justify-center shadow-lg hover:bg-red-700 transition-all">
+            <i class="fas fa-comments text-white text-xl"></i>
+        </button>
+    </div>
+
+    <!-- Main Container -->
+    <div class="bg-gray-800 rounded-lg shadow-2xl w-full max-w-6xl mx-auto my-8">
+        <!-- Header with Logo and Navigation -->
+        <header class="bg-gray-900 rounded-t-lg p-4">
+            <div class="flex flex-wrap justify-between items-center">
+                <div class="flex items-center space-x-2">
+                    <div class="bg-red-600 h-10 w-10 rounded-full flex items-center justify-center">
+                        <i class="fas fa-car text-white"></i>
+                    </div>
+                    <span class="text-white text-xl font-bold">OTO MUAMMER</span>
+                </div>
+                
+                <nav class="hidden md:flex space-x-1">
+                    <a href="#home" class="nav-item active bg-gray-700 h-10 flex items-center justify-center rounded px-4 text-white">
+                        <i class="fas fa-home mr-2"></i>Ana Sayfa
+                    </a>
+                    <a href="#services" class="nav-item bg-gray-700 h-10 flex items-center justify-center rounded px-4 text-white">
+                        <i class="fas fa-wrench mr-2"></i>Hizmetler
+                    </a>
+                    <a href="#vehicles" class="nav-item bg-gray-700 h-10 flex items-center justify-center rounded px-4 text-white">
+                        <i class="fas fa-car mr-2"></i>Araçlar
+                    </a>
+                    <a href="#gallery" class="nav-item bg-gray-700 h-10 flex items-center justify-center rounded px-4 text-white">
+                        <i class="fas fa-images mr-2"></i>Galeri
+                    </a>
+                    <a href="#about" class="nav-item bg-gray-700 h-10 flex items-center justify-center rounded px-4 text-white">
+                        <i class="fas fa-info-circle mr-2"></i>Hakkımızda
+                    </a>
+                    <a href="#contact" class="nav-item bg-gray-700 h-10 flex items-center justify-center rounded px-4 text-white">
+                        <i class="fas fa-envelope mr-2"></i>İletişim
+                    </a>
+                </nav>
+                
+                <button id="mobileMenuButton" class="md:hidden text-white text-2xl">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </div>
+            
+            <!-- Mobile Menu -->
+            <div id="mobileMenu" class="hidden md:hidden mt-4 space-y-2">
+                <a href="#home" class="block nav-item active bg-gray-700 py-2 px-4 rounded text-white">
+                    <i class="fas fa-home mr-2"></i>Ana Sayfa
+                </a>
+                <a href="#services" class="block nav-item bg-gray-700 py-2 px-4 rounded text-white">
+                    <i class="fas fa-wrench mr-2"></i>Hizmetler
+                </a>
+                <a href="#vehicles" class="block nav-item bg-gray-700 py-2 px-4 rounded text-white">
+                    <i class="fas fa-car mr-2"></i>Araçlar
+                </a>
+                <a href="#gallery" class="block nav-item bg-gray-700 py-2 px-4 rounded text-white">
+                    <i class="fas fa-images mr-2"></i>Galeri
+                </a>
+                <a href="#about" class="block nav-item bg-gray-700 py-2 px-4 rounded text-white">
+                    <i class="fas fa-info-circle mr-2"></i>Hakkımızda
+                </a>
+                <a href="#contact" class="block nav-item bg-gray-700 py-2 px-4 rounded text-white">
+                    <i class="fas fa-envelope mr-2"></i>İletişim
+                </a>
+            </div>
+        </header>
+        
+        <div class="p-4">
+            <!-- Main Content -->
+            <div id="home" class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <!-- Left Column -->
+                <div class="md:col-span-2 space-y-4">
+                    <!-- Hero Section with Carousel -->
+                    <div class="bg-gray-700 rounded overflow-hidden content-box fade-in">
+                        <div class="carousel-container h-64">
+                            <div class="carousel-slide active" style="background-image: url('/api/placeholder/800/400');">
+                                <div class="bg-black bg-opacity-50 h-full flex flex-col justify-end p-6">
+                                    <h2 class="text-white text-2xl font-bold mb-2">Profesyonel Oto Servis</h2>
+                                    <p class="text-gray-200 mb-4">Aracınız için en iyi bakım ve onarım hizmetleri</p>
+                                    <button id="heroAppointmentBtn" class="bg-red-600 text-white py-2 px-4 rounded w-48 hover:bg-red-700 transition-all">
+                                        Hemen Randevu Al
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="carousel-slide" style="background-image: url('/api/placeholder/800/400');">
+                                <div class="bg-black bg-opacity-50 h-full flex flex-col justify-end p-6">
+                                    <h2 class="text-white text-2xl font-bold mb-2">Yaz Fırsatları</h2>
+                                    <p class="text-gray-200 mb-4">Klima bakımı ve yaz lastiği değişiminde %20 indirim</p>
+                                    <button class="deals-btn bg-red-600 text-white py-2 px-4 rounded w-48 hover:bg-red-700 transition-all">
+                                        Fırsatları İncele
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="carousel-slide" style="background-image: url('/api/placeholder/800/400');">
+                                <div class="bg-black bg-opacity-50 h-full flex flex-col justify-end p-6">
+                                    <h2 class="text-white text-2xl font-bold mb-2">Motor Performansı</h2>
+                                    <p class="text-gray-200 mb-4">Uzman ekibimizle motorunuzun performansını arttırın</p>
+                                    <button class="service-btn bg-red-600 text-white py-2 px-4 rounded w-48 hover:bg-red-700 transition-all">
+                                        Servislerimiz
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="carousel-controls">
+                                <div class="carousel-dot active" data-slide="0"></div>
+                                <div class="carousel-dot" data-slide="1"></div>
+                                <div class="carousel-dot" data-slide="2"></div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Services Section -->
+                    <div id="services" class="bg-gray-700 rounded p-4 content-box fade-in">
+                        <h3 class="text-white text-xl font-bold mb-4 section-title">Hizmetlerimiz</h3>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-4">
+                            <div class="service-item bg-gray-600 rounded p-3 flex items-center transition-all hover:shadow-lg cursor-pointer" data-service="engine">
+                                <div class="bg-red-600 w-10 h-10 rounded-full flex items-center justify-center mr-3">
+                                    <i class="fas fa-cogs text-white"></i>
+                                </div>
+                                <div>
+                                    <h4 class="text-white font-bold">Motor Bakımı</h4>
+                                    <p class="text-gray-300 text-sm">Yağ, filtre değişimi ve motor ayarları</p>
+                                </div>
+                            </div>
+                            <div class="service-item bg-gray-600 rounded p-3 flex items-center transition-all hover:shadow-lg cursor-pointer" data-service="brake">
+                                <div class="bg-red-600 w-10 h-10 rounded-full flex items-center justify-center mr-3">
+                                    <i class="fas fa-tachometer-alt text-white"></i>
+                                </div>
+                                <div>
+                                    <h4 class="text-white font-bold">Fren Sistemi</h4>
+                                    <p class="text-gray-300 text-sm">Fren balataları, diskleri ve hidrolik sistemi</p>
+                                </div>
+                            </div>
+                            <div class="service-item bg-gray-600 rounded p-3 flex items-center transition-all hover:shadow-lg cursor-pointer" data-service="electric">
+                                <div class="bg-red-600 w-10 h-10 rounded-full flex items-center justify-center mr-3">
+                                    <i class="fas fa-bolt text-white"></i>
+                                </div>
+                                <div>
+                                    <h4 class="text-white font-bold">Elektrik Sistemleri</h4>
+                                    <p class="text-gray-300 text-sm">Akü, marş, alternatör ve aydınlatma</p>
+                                </div>
+                            </div>
+                            <div class="service-item bg-gray-600 rounded p-3 flex items-center transition-all hover:shadow-lg cursor-pointer" data-service="ac">
+                                <div class="bg-red-600 w-10 h-10 rounded-full flex items-center justify-center mr-3">
+                                    <i class="fas fa-snowflake text-white"></i>
+                                </div>
+                                <div>
+                                    <h4 class="text-white font-bold">Klima Servisi</h4>
+                                    <p class="text-gray-300 text-sm">Klima gazı, temizliği ve bakımı</p>
+                                </div>
+                            </div>
+                            <div class="service-item bg-gray-600 rounded p-3 flex items-center transition-all hover:shadow-lg cursor-pointer" data-service="tire">
+                                <div class="bg-red-600 w-10 h-10 rounded-full flex items-center justify-center mr-3">
+                                    <i class="fas fa-circle-notch text-white"></i>
+                                </div>
+                                <div>
+                                    <h4 class="text-white font-bold">Lastik Hizmetleri</h4>
+                                    <p class="text-gray-300 text-sm">Lastik değişimi, rotasyon ve balans</p>
+                                </div>
+                            </div>
+                            <div class="service-item bg-gray-600 rounded p-3 flex items-center transition-all hover:shadow-lg cursor-pointer" data-service="diagnostic">
+                                <div class="bg-red-600 w-10 h-10 rounded-full flex items-center justify-center mr-3">
+                                    <i class="fas fa-laptop text-white"></i>
+                                </div>
+                                <div>
+                                    <h4 class="text-white font-bold">Arıza Teşhisi</h4>
+                                    <p class="text-gray-300 text-sm">Bilgisayarlı arıza tespiti ve çözümü</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Gallery Section -->
+                    <div id="gallery" class="bg-gray-700 rounded p-4 content-box fade-in">
+                        <h3 class="text-white text-xl font-bold mb-4 section-title">Galeri</h3>
+                        <div class="grid grid-cols-2 md:grid-cols-3 gap-3 mt-4">
+                            <div class="bg-gray-600 h-32 rounded overflow-hidden cursor-pointer hover:opacity-80 transition-all" style="background-image: url('/api/placeholder/300/200'); background-size: cover;"></div>
+                            <div class="bg-gray-600 h-32 rounded overflow-hidden cursor-pointer hover:opacity-80 transition-all" style="background-image: url('/api/placeholder/300/200'); background-size: cover;"></div>
+                            <div class="bg-gray-600 h-32 rounded overflow-hidden cursor-pointer hover:opacity-80 transition-all" style="background-image: url('/api/placeholder/300/200'); background-size: cover;"></div>
+                            <div class="bg-gray-600 h-32 rounded overflow-hidden cursor-pointer hover:opacity-80 transition-all" style="background-image: url('/api/placeholder/300/200'); background-size: cover;"></div>
+                            <div class="bg-gray-600 h-32 rounded overflow-hidden cursor-pointer hover:opacity-80 transition-all" style="background-image: url('/api/placeholder/300/200'); background-size: cover;"></div>
+                            <div class="bg-gray-600 h-32 rounded overflow-hidden cursor-pointer hover:opacity-80 transition-all" style="background-image: url('/api/placeholder/300/200'); background-size: cover;"></div>
+                        </div>
+                        <div class="text-center mt-4">
+                            <button class="bg-gray-600 text-white py-2 px-4 rounded hover:bg-gray-500 transition-all">
+                                Tüm Fotoğrafları Gör
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Right Column -->
+                <div class="space-y-4">
+                    <!-- Working Hours -->
+                    <div class="bg-gray-700 rounded p-4 content-box fade-in">
+                        <h3 class="text-white text-xl font-bold mb-4 section-title">Çalışma Saatleri</h3>
+                        <div class="text-gray-300 mt-4">
+                            <div class="flex justify-between py-2 border-b border-gray-600">
+                                <span>Pazartesi</span>
+                                <span>08:00 - 18:00</span>
+                            </div>
+                            <div class="flex justify-between py-2 border-b border-gray-600">
+                                <span>Salı</span>
+                                <span>08:00 - 18:00</span>
+                            </div>
+                            <div class="flex justify-between py-2 border-b border-gray-600">
+                                <span>Çarşamba</span>
+                                <span>08:00 - 18:00</span>
+                            </div>
+                            <div class="flex justify-between py-2 border-b border-gray-600">
+                                <span>Perşembe</span>
+                                <span>08:00 - 18:00</span>
+                            </div>
+                            <div class="flex justify-between py-2 border-b border-gray-600">
+                                <span>Cuma</span>
+                                <span>08:00 - 18:00</span>
+                            </div>
+                            <div class="flex justify-between py-2 border-b border-gray-600">
+                                <span>Cumartesi</span>
+                                <span>08:00 - 14:00</span>
+                            </div>
+                            <div class="flex justify-between py-2">
+                                <span>Pazar</span>
+                                <span class="text-red-400">Kapalı</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Contact Information -->
+                    <div id="contact" class="bg-gray-700 rounded p-4 content-box fade-in">
+                        <h3 class="text-white text-xl font-bold mb-4 section-title">İletişim</h3>
+                        <div class="text-gray-300 mt-4 space-y-3">
+                            <div class="flex items-start">
+                                <i class="fas fa-phone-alt mt-1 text-red-500 mr-3"></i>
+                                <div>
+                                    <p>Telefon:</p>
+                                    <a href="tel:+905551234567" class="text-white hover:text-red-400 transition-all">(0555) 123 4567</a>
+                                </div>
+                            </div>
+                            <div class="flex items-start">
+                                <i class="fas fa-envelope mt-1 text-red-500 mr-3"></i>
+                                <div>
+                                    <p>E-posta:</p>
+                                    <a href="mailto:info@otomuammer.com" class="text-white hover:text-red-400 transition-all">info@otomuammer.com</a>
+                                </div>
+                            </div>
+                            <div class="flex items-start">
+                                <i class="fas fa-map-marker-alt mt-1 text-red-500 mr-3"></i>
+                                <div>
+                                    <p>Adres:</p>
+                                    <a href="https://maps.google.com" target="_blank" class="text-white hover:text-red-400 transition-all">
+                                        Sanayi Mahallesi, Usta Sokak No:42<br>
+                                        Merkez / Şehir
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mt-4 bg-gray-600 h-36 rounded-lg" id="map">
+                            <!-- Map placeholder -->
+                            <div class="h-full flex items-center justify-center text-white">
+                                <div class="text-center">
+                                    <i class="fas fa-map-marked-alt text-3xl mb-2"></i>
+                                    <p>Haritayı Yüklemek İçin Tıklayın</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Customer Reviews -->
+                    <div class="bg-gray-700 rounded p-4 content-box fade-in">
+                        <h3 class="text-white text-xl font-bold mb-4 section-title">Müşteri Yorumları</h3>
+                        <div class="space-y-3 mt-4">
+                            <div class="bg-gray-600 p-3 rounded">
+                                <div class="flex items-center mb-2">
+                                    <div class="text-yellow-400">
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                    </div>
+                                    <span class="ml-2 text-white text-sm">Ahmet K.</span>
+                                </div>
+                                <p class="text-gray-300 text-sm">"Araç bakımı için en güvenilir adres! Hızlı ve profesyonel hizmet aldım, kesinlikle tavsiye ederim."</p>
+                            </div>
+                            <div class="bg-gray-600 p-3 rounded">
+                                <div class="flex items-center mb-2">
+                                    <div class="text-yellow-400">
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star-half-alt"></i>
+                                    </div>
+                                    <span class="ml-2 text-white text-sm">Mehmet Y.</span>
+                                </div><p class="text-gray-300 text-sm">"Hızlı ve kaliteli hizmet. Fiyatları da oldukça uygun. Aracımdaki sorunu hemen teşhis edip çözdüler."</p>
+                            </div>
+                            <div class="bg-gray-600 p-3 rounded">
+                                <div class="flex items-center mb-2">
+                                    <div class="text-yellow-400">
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                    </div>
+                                    <span class="ml-2 text-white text-sm">Ayşe T.</span>
+                                </div>
+                                <p class="text-gray-300 text-sm">"Çalışanlar çok ilgili ve profesyonel. Bekleme alanı rahat, ikramlar güzel. Aracımı güvenle teslim ediyorum."</p>
+                            </div>
+                        </div>
+                        <div class="text-center mt-4">
+                            <button id="reviewBtn" class="bg-gray-600 text-white py-2 px-4 rounded hover:bg-gray-500 transition-all">
+                                Yorum Bırak
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- Appointment Button -->
+                    <div class="bg-gray-700 rounded p-4 content-box fade-in">
+                        <h3 class="text-white text-xl font-bold mb-4 section-title">Randevu Al</h3>
+                        <p class="text-gray-300 mb-4">Aracınız için hemen online randevu oluşturun, size en uygun zamanda hizmet verelim.</p>
+                        <button id="appointmentBtn" class="w-full bg-red-600 text-white py-3 px-4 rounded font-bold hover:bg-red-700 transition-all flex items-center justify-center">
+                            <i class="fas fa-calendar-alt mr-2"></i>
+                            Hemen Randevu Al
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Special Offers Section -->
+            <div id="offers" class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6">
+                <div class="bg-gray-700 rounded p-4 content-box fade-in">
+                    <div class="text-red-500 text-3xl mb-2">
+                        <i class="fas fa-percent"></i>
+                    </div>
+                    <h3 class="text-white text-xl font-bold mb-2">Özel Kampanyalar</h3>
+                    <ul class="text-gray-300 space-y-2 mt-3">
+                        <li class="flex items-start">
+                            <i class="fas fa-check-circle text-red-500 mt-1 mr-2"></i>
+                            <span>Yaz lastiği değişiminde %15 indirim!</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fas fa-check-circle text-red-500 mt-1 mr-2"></i>
+                            <span>Periyodik bakımlarda check-up ücretsiz</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fas fa-check-circle text-red-500 mt-1 mr-2"></i>
+                            <span>İkinci bakımda %10 indirim fırsatı</span>
+                        </li>
+                    </ul>
+                    <button class="mt-4 bg-gray-600 text-white py-2 px-4 rounded hover:bg-gray-500 transition-all">
+                        Detaylı Bilgi
+                    </button>
+                </div>
+                
+                <!-- Blog Section -->
+                <div class="bg-gray-700 rounded p-4 content-box fade-in">
+                    <div class="text-red-500 text-3xl mb-2">
+                        <i class="fas fa-newspaper"></i>
+                    </div>
+                    <h3 class="text-white text-xl font-bold mb-2">Blog</h3>
+                    <div class="space-y-3 mt-3">
+                        <a href="#" class="block text-white hover:text-red-400 transition-all">
+                            <div class="text-sm text-gray-400">15 Nisan 2025</div>
+                            <div>Kış Aylarında Araç Bakımı</div>
+                        </a>
+                        <a href="#" class="block text-white hover:text-red-400 transition-all">
+                            <div class="text-sm text-gray-400">5 Nisan 2025</div>
+                            <div>Motor Yağı Seçim Rehberi</div>
+                        </a>
+                        <a href="#" class="block text-white hover:text-red-400 transition-all">
+                            <div class="text-sm text-gray-400">25 Mart 2025</div>
+                            <div>Fren Sistemleri Hakkında Bilmeniz Gerekenler</div>
+                        </a>
+                    </div>
+                    <button class="mt-4 bg-gray-600 text-white py-2 px-4 rounded hover:bg-gray-500 transition-all">
+                        Tüm Yazılar
+                    </button>
+                </div>
+                
+                <!-- Social Media Section -->
+                <div class="bg-gray-700 rounded p-4 content-box fade-in">
+                    <div class="text-red-500 text-3xl mb-2">
+                        <i class="fas fa-share-alt"></i>
+                    </div>
+                    <h3 class="text-white text-xl font-bold mb-2">Sosyal Medya</h3>
+                    <p class="text-gray-300 mb-4">Güncel kampanyalar ve bilgiler için sosyal medya hesaplarımızı takip edin.</p>
+                    <div class="flex space-x-4">
+                        <a href="#" class="circle-button bg-gray-600 h-12 w-12 rounded-full">
+                            <i class="fab fa-facebook-f"></i>
+                        </a>
+                        <a href="#" class="circle-button bg-gray-600 h-12 w-12 rounded-full">
+                            <i class="fab fa-instagram"></i>
+                        </a>
+                        <a href="#" class="circle-button bg-gray-600 h-12 w-12 rounded-full">
+                            <i class="fab fa-twitter"></i>
+                        </a>
+                        <a href="#" class="circle-button bg-gray-600 h-12 w-12 rounded-full">
+                            <i class="fab fa-youtube"></i>
+                        </a>
+                    </div>
+                    <div class="mt-4">
+                        <div class="text-gray-300 text-sm">
+                            <i class="fas fa-hashtag text-red-500"></i> OtoMuammer
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- About Us Section -->
+            <div id="about" class="bg-gray-700 rounded p-6 mt-6 content-box fade-in">
+                <h2 class="text-white text-2xl font-bold mb-4 section-title">Hakkımızda</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+                    <div>
+                        <p class="text-gray-300 mb-4">
+                            2005 yılından beri Oto Muammer olarak müşterilerimize en kaliteli otomobil bakım ve tamir hizmetlerini sunmaktayız. Profesyonel ekibimiz ve modern ekipmanlarımızla aracınızı güvenle teslim edebileceğiniz bir adresiz.
+                        </p>
+                        <p class="text-gray-300 mb-4">
+                            Tecrübeli teknisyenlerimiz, en son teknoloji ve orijinal yedek parçalar kullanarak her marka ve model araca hizmet vermektedir. Müşteri memnuniyeti bizim için her zaman önceliklidir.
+                        </p>
+                        <div class="flex space-x-4 mt-6">
+                            <div class="text-center">
+                                <div class="text-red-500 text-3xl font-bold">20+</div>
+                                <div class="text-gray-300">Yıllık Tecrübe</div>
+                            </div>
+                            <div class="text-center">
+                                <div class="text-red-500 text-3xl font-bold">12+</div>
+                                <div class="text-gray-300">Uzman Teknisyen</div>
+                            </div>
+                            <div class="text-center">
+                                <div class="text-red-500 text-3xl font-bold">10K+</div>
+                                <div class="text-gray-300">Mutlu Müşteri</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-gray-600 rounded-lg p-4">
+                        <h3 class="text-white text-xl font-bold mb-4">Neden Bizi Tercih Etmelisiniz?</h3>
+                        <ul class="space-y-3 text-gray-300">
+                            <li class="flex items-start">
+                                <i class="fas fa-check-circle text-red-500 mt-1 mr-2"></i>
+                                <span>Profesyonel ve deneyimli teknisyenler</span>
+                            </li>
+                            <li class="flex items-start">
+                                <i class="fas fa-check-circle text-red-500 mt-1 mr-2"></i>
+                                <span>Modern ekipman ve teknoloji</span>
+                            </li>
+                            <li class="flex items-start">
+                                <i class="fas fa-check-circle text-red-500 mt-1 mr-2"></i>
+                                <span>Orijinal yedek parça garantisi</span>
+                            </li>
+                            <li class="flex items-start">
+                                <i class="fas fa-check-circle text-red-500 mt-1 mr-2"></i>
+                                <span>Hızlı ve güvenilir hizmet</span>
+                            </li>
+                            <li class="flex items-start">
+                                <i class="fas fa-check-circle text-red-500 mt-1 mr-2"></i>
+                                <span>Şeffaf fiyatlandırma politikası</span>
+                            </li>
+                            <li class="flex items-start">
+                                <i class="fas fa-check-circle text-red-500 mt-1 mr-2"></i>
+                                <span>İşçilik ve parça garantisi</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Partners Section -->
+            <div class="bg-gray-700 rounded p-6 mt-6 content-box fade-in">
+                <h2 class="text-white text-2xl font-bold mb-4 section-title">İş Ortaklarımız</h2>
+                <div class="flex flex-wrap justify-around items-center gap-6 mt-6">
+                    <div class="bg-gray-800 p-4 rounded-lg w-32 h-32 flex items-center justify-center">
+                        <div class="text-center text-white">Marka Logo</div>
+                    </div>
+                    <div class="bg-gray-800 p-4 rounded-lg w-32 h-32 flex items-center justify-center">
+                        <div class="text-center text-white">Marka Logo</div>
+                    </div>
+                    <div class="bg-gray-800 p-4 rounded-lg w-32 h-32 flex items-center justify-center">
+                        <div class="text-center text-white">Marka Logo</div>
+                    </div>
+                    <div class="bg-gray-800 p-4 rounded-lg w-32 h-32 flex items-center justify-center">
+                        <div class="text-center text-white">Marka Logo</div>
+                    </div>
+                    <div class="bg-gray-800 p-4 rounded-lg w-32 h-32 flex items-center justify-center">
+                        <div class="text-center text-white">Marka Logo</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Footer -->
+        <footer class="bg-gray-900 rounded-b-lg p-6 mt-6">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div>
+                    <div class="flex items-center space-x-2 mb-4">
+                        <div class="bg-red-600 h-8 w-8 rounded-full flex items-center justify-center">
+                            <i class="fas fa-car text-white text-sm"></i>
+                        </div>
+                        <span class="text-white font-bold">OTO MUAMMER</span>
+                    </div>
+                    <p class="text-gray-400 text-sm">
+                        Aracınız için profesyonel bakım ve tamir hizmetleri sunan güvenilir servis noktanız.
+                    </p>
+                </div>
+                <div>
+                    <h4 class="text-white font-bold mb-4">Hızlı Erişim</h4>
+                    <div class="grid grid-cols-2 gap-2">
+                        <a href="#home" class="text-gray-400 hover:text-white transition-all">Ana Sayfa</a>
+                        <a href="#services" class="text-gray-400 hover:text-white transition-all">Hizmetler</a>
+                        <a href="#vehicles" class="text-gray-400 hover:text-white transition-all">Araçlar</a>
+                        <a href="#gallery" class="text-gray-400 hover:text-white transition-all">Galeri</a>
+                        <a href="#about" class="text-gray-400 hover:text-white transition-all">Hakkımızda</a>
+                        <a href="#contact" class="text-gray-400 hover:text-white transition-all">İletişim</a>
+                    </div>
+                </div>
+                <div>
+                    <h4 class="text-white font-bold mb-4">İletişim</h4>
+                    <div class="text-gray-400 space-y-2">
+                        <p class="flex items-center">
+                            <i class="fas fa-map-marker-alt mr-2 text-red-500"></i>
+                            Sanayi Mahallesi, Usta Sokak No:42
+                        </p>
+                        <p class="flex items-center">
+                            <i class="fas fa-phone-alt mr-2 text-red-500"></i>
+                            (0555) 123 4567
+                        </p>
+                        <p class="flex items-center">
+                            <i class="fas fa-envelope mr-2 text-red-500"></i>
+                            info@otomuammer.com
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="border-t border-gray-700 mt-6 pt-6 flex flex-col md:flex-row justify-between items-center">
+                <div class="text-gray-400 text-sm">
+                    © 2025 Oto Muammer. Tüm hakları saklıdır.
+                </div>
+                <div class="flex space-x-4 mt-4 md:mt-0">
+                    <a href="#" class="text-gray-400 hover:text-white transition-all">
+                        <i class="fab fa-facebook-f"></i>
+                    </a>
+                    <a href="#" class="text-gray-400 hover:text-white transition-all">
+                        <i class="fab fa-instagram"></i>
+                    </a>
+                    <a href="#" class="text-gray-400 hover:text-white transition-all">
+                        <i class="fab fa-twitter"></i>
+                    </a>
+                    <a href="#" class="text-gray-400 hover:text-white transition-all">
+                        <i class="fab fa-youtube"></i>
+                    </a>
+                </div>
+            </div>
+        </footer>
+    </div>
+    
+    <!-- Review Modal -->
+    <div id="reviewModal" class="modal">
+        <div class="modal-content">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-xl font-bold text-white">Değerlendirme Yap</h3>
+                <button id="closeReviewModal" class="text-white hover:text-red-500">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <form id="reviewForm" class="space-y-4">
+                <div>
+                    <label class="block text-gray-300 mb-1">Ad Soyad</label>
+                    <input type="text" required class="w-full p-2 bg-gray-700 text-white rounded focus:outline-none focus:ring-2 focus:ring-red-500">
+                </div>
+                <div>
+                    <label class="block text-gray-300 mb-1">Puanınız</label>
+                    <div class="flex space-x-2 text-gray-400 text-2xl rating-stars">
+                        <i class="far fa-star cursor-pointer" data-rating="1"></i>
+                        <i class="far fa-star cursor-pointer" data-rating="2"></i>
+                        <i class="far fa-star cursor-pointer" data-rating="3"></i>
+                        <i class="far fa-star cursor-pointer" data-rating="4"></i>
+                        <i class="far fa-star cursor-pointer" data-rating="5"></i>
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-gray-300 mb-1">Yorumunuz</label>
+                    <textarea required class="w-full p-2 bg-gray-700 text-white rounded focus:outline-none focus:ring-2 focus:ring-red-500" rows="4"></textarea>
+                </div>
+                <button type="submit" class="w-full py-2 bg-red-600 text-white rounded hover:bg-red-700 transition-all">
+                    Gönder
+                </button>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Chat Modal -->
+    <div id="chatModal" class="modal">
+        <div class="modal-content">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-xl font-bold text-white">Canlı Destek</h3>
+                <button id="closeChatModal" class="text-white hover:text-red-500">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="bg-gray-800 p-3 rounded-lg h-64 overflow-y-auto mb-4" id="chatMessages">
+                <div class="flex justify-start mb-3">
+                    <div class="bg-gray-700 rounded-lg p-2 max-w-xs">
+                        <div class="text-xs text-gray-400">Destek Ekibi</div>
+                        <div class="text-white">Merhaba, size nasıl yardımcı olabilirim?</div>
+                    </div>
+                </div>
+            </div>
+            <form id="chatForm" class="flex space-x-2">
+                <input type="text" class="flex-1 p-2 bg-gray-700 text-white rounded focus:outline-none focus:ring-2 focus:ring-red-500" placeholder="Mesajınızı yazın...">
+                <button type="submit" class="bg-red-600 text-white p-2 rounded hover:bg-red-700 transition-all">
+                    <i class="fas fa-paper-plane"></i>
+                </button>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Service Details Modal -->
+    <div id="serviceModal" class="modal">
+        <div class="modal-content">
+            <div class="flex justify-between items-center mb-4">
+                <h3 id="serviceModalTitle" class="text-xl font-bold text-white">Hizmet Detayı</h3>
+                <button id="closeServiceModal" class="text-white hover:text-red-500">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div id="serviceModalContent">
+                <!-- Content will be dynamically populated -->
+            </div>
+            <div class="mt-4 flex justify-end">
+                <button id="serviceModalButton" class="py-2 px-4 bg-red-600 text-white rounded hover:bg-red-700 transition-all">
+                    Randevu Al
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
